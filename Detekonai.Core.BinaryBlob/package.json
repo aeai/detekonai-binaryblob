@@ -1,0 +1,15 @@
+{
+  "name": "com.detekonai.core.binaryblob",
+  "version": "1.0.0",
+  "displayName": "Detekonai Binary Blob",
+  "description": "Binary Blob for easy binary serialization",
+  "unity": "2019.1",
+  "unityRelease": "0b5",
+  "keywords": [
+    "BinaryBlob"
+  ],
+  "author": {
+    "name": "aeai",
+    "email": "aeai@detekonai.com"
+  }
+}

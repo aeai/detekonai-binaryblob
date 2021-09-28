@@ -10,9 +10,14 @@
     <RepositoryUrl>https://github.com/aeai/detekonai-binaryblob.git</RepositoryUrl>
     <Authors>Aeai</Authors>
     <Company>Detekonai</Company>
+    <Configurations>Debug;Release;MasterDebug</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MasterDebug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
@@ -20,8 +25,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' != 'MasterDebug' ">
     <PackageReference Include="Detekonai.Core.Common" Version="0.0.1" />
   </ItemGroup>
-
+  <ItemGroup Condition=" '$(Configuration)' == 'MasterDebug' ">
+    <ProjectReference Include="..\..\detekonai-common\Detekonai.Core.Common\Detekonai.Core.Common.csproj" />
+  </ItemGroup>
 </Project>

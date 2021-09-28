@@ -348,5 +348,6 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 Detekonai.Core.BinaryBlob/obj.meta
+Detekonai.Core.BinaryBlob/bin.meta
 Detekonai.Core.BinaryBlob.Tests/bin.meta
 Detekonai.Core.BinaryBlob.Tests/obj.meta

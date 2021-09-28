@@ -8,6 +8,8 @@
     <PackageProjectUrl>https://github.com/aeai/detekonai-binaryblob</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/aeai/detekonai-binaryblob.git</RepositoryUrl>
+    <Authors>Aeai</Authors>
+    <Company>Detekonai</Company>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

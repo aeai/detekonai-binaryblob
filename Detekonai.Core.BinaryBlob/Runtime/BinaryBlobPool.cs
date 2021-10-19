@@ -7,7 +7,7 @@ using System.Net.Sockets;
 
 namespace Detekonai.Core
 {
-	public class BinaryBlobPool : ILogCapable
+	public class BinaryBlobPool
 	{
 		public class BufferOverflowException : Exception
 		{
@@ -33,7 +33,7 @@ namespace Detekonai.Core
 		private readonly ConcurrentQueue<int> freeIndexes = new ConcurrentQueue<int>();
 		private readonly ConcurrentBag<BinaryBlob> blobs = new ConcurrentBag<BinaryBlob>();
 
-		public event ILogCapable.LogHandler Logger;
+		public ILogConnector Logger { get; set; }
 
 		public byte[] GetMemory()
 		{
@@ -72,7 +72,7 @@ namespace Detekonai.Core
 			}
 			blob.Configure(offset, BlobSize);
 			blob.Assign();
-			Logger?.Invoke(this, $"{offset} is assigned to a blob");
+			Logger?.Log(this, $"{offset} is assigned to a blob");
 			return blob;
 		}
 
@@ -82,7 +82,7 @@ namespace Detekonai.Core
 			{
 				throw new InvalidOperationException("This blob belongs to a different pool!");
 			}
-			Logger?.Invoke(this, $"Blob return to the pool, memory chunck {blob.BufferAddress} freed, blobCount: {blobs.Count + 1} freeIndexCount:{freeIndexes.Count + 1}");
+			Logger?.Log(this, $"Blob return to the pool, memory chunck {blob.BufferAddress} freed, blobCount: {blobs.Count + 1} freeIndexCount:{freeIndexes.Count + 1}");
 			freeIndexes.Enqueue(blob.BufferAddress);
 			blob.Configure(0, 0);
 			blobs.Add(blob);

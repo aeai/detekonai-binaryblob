@@ -147,6 +147,11 @@ namespace Detekonai.Core
 			AddInt(val.Length);
 			Index += System.Text.Encoding.UTF8.GetBytes(val, 0, val.Length, buffer, bufferOffset + Index);
 		}
+		
+		public void AddFixedString(string val)
+		{
+			Index += System.Text.Encoding.UTF8.GetBytes(val, 0, val.Length, buffer, bufferOffset + Index);
+		}
 
 		public float ReadSingle()
 		{
@@ -218,6 +223,11 @@ namespace Detekonai.Core
 		public string ReadString()
 		{
 			int length = ReadInt();
+			return ReadFixedString(length);
+		}
+
+		public string ReadFixedString(int length)
+        {
 			string res = System.Text.Encoding.UTF8.GetString(buffer, bufferOffset + Index, length);
 			Index += length;
 			return res;

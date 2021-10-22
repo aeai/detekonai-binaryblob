@@ -153,6 +153,15 @@ namespace Detekonai.Core.Tests
 		}
 
 		[Test]
+		public void AddFixedString_ReadFixedString_Consistent()
+		{
+			blob.AddFixedString("The quick brown fox jumps over the lazy dog");
+			Assert.That(blob.Index, Is.EqualTo("The quick brown fox jumps over the lazy dog".Length), "Index check");
+			blob.JumpIndexToBegin();
+			Assert.That(blob.ReadFixedString("The quick brown fox jumps over the lazy dog".Length), Is.EqualTo("The quick brown fox jumps over the lazy dog"), "Readback check");
+		}
+
+		[Test]
 		public void PrefixBuffer_Reserve_space_properly()
 		{
 			blob.PrefixBuffer(4);

@@ -233,6 +233,21 @@ namespace Detekonai.Core
 			return res;
 		}
 
+		public void CopyDataFrom(byte[] data, int start, int length)
+        {
+			if (Index + length > bufferSize)
+			{
+				throw new IndexOutOfRangeException("We ran out of buffer space!");
+			}
+			Array.Copy(data, start, buffer, bufferOffset + Index, length);
+			Index += length;
+		}
+
+		public void CopyDataFrom(BinaryBlob other, int length)
+		{
+			CopyDataFrom(other.buffer, other.bufferOffset+other.index, length);
+		}
+
 		public void JumpIndexToEnd()
 		{
 			Index = lastIndex;

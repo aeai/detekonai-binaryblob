@@ -246,6 +246,7 @@ namespace Detekonai.Core
 		public void CopyDataFrom(BinaryBlob other, int length)
 		{
 			CopyDataFrom(other.buffer, other.bufferOffset+other.index, length);
+			other.index += length;
 		}
 
 		public void JumpIndexToEnd()

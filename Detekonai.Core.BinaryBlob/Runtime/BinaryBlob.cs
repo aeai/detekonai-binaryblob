@@ -14,9 +14,10 @@ namespace Detekonai.Core
 		private int bufferOffset;
 		private int bufferSize;
 		private int lastIndex;
-		private bool inUse = false;
 		private int prefixSize = 0;
 		public BinaryBlobPool Owner { get; private set; }
+
+		public bool InUse { get; private set; } = false;
 
 		public int BytesWritten
 		{
@@ -58,7 +59,7 @@ namespace Detekonai.Core
 
 		internal void Assign()
 		{
-			inUse = true;
+			InUse = true;
 		}
 
 		internal void Configure(int offset, int size)
@@ -261,12 +262,12 @@ namespace Detekonai.Core
 
 		public void Release()
 		{
-			if(inUse)
+			if(InUse)
 			{
 				lastIndex = 0;
 				Index = 0;
 				prefixSize = 0;
-				inUse = false;
+				InUse = false;
 				Owner.ReleaseBlob(this);
 			}
 		}

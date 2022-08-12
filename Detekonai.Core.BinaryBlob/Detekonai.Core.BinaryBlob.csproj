@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>    <Version>0.0.9</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>    <Version>0.0.10</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright (c) 2021 Erik Takakura-Zajac</Copyright>
     <PackageProjectUrl>https://github.com/aeai/detekonai-binaryblob</PackageProjectUrl>
@@ -26,7 +26,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(Configuration)' != 'MasterDebug' ">
-    <PackageReference Include="Detekonai.Core.Common" Version="0.0.6" />
+    <PackageReference Include="Detekonai.Core.Common" Version="0.0.7" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'MasterDebug' ">
     <ProjectReference Include="..\..\detekonai-common\Detekonai.Core.Common\Detekonai.Core.Common.csproj" />

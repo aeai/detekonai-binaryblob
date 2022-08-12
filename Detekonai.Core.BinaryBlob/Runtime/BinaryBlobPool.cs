@@ -33,7 +33,7 @@ namespace Detekonai.Core
 		private readonly ConcurrentQueue<int> freeIndexes = new ConcurrentQueue<int>();
 		private readonly ConcurrentBag<BinaryBlob> blobs = new ConcurrentBag<BinaryBlob>();
 
-		public ILogConnector Logger { get; set; }
+		public ILogger Logger { get; set; }
 
 		public byte[] GetMemory()
 		{

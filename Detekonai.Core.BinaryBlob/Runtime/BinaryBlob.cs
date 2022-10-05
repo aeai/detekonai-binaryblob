@@ -145,8 +145,15 @@ namespace Detekonai.Core
 
 		public void AddString(string val)
 		{
-			AddInt(val.Length);
-			Index += System.Text.Encoding.UTF8.GetBytes(val, 0, val.Length, buffer, bufferOffset + Index);
+			if (val == null)
+			{
+				AddInt(-1);
+			}
+			else
+			{
+				AddInt(val.Length);
+				Index += System.Text.Encoding.UTF8.GetBytes(val, 0, val.Length, buffer, bufferOffset + Index);
+			}
 		}
 		
 		public void AddFixedString(string val)
@@ -224,6 +231,10 @@ namespace Detekonai.Core
 		public string ReadString()
 		{
 			int length = ReadInt();
+			if(length == -1)
+            {
+				return null;
+            }
 			return ReadFixedString(length);
 		}
 

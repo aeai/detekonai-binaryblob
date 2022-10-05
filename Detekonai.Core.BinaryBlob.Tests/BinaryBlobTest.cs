@@ -153,6 +153,15 @@ namespace Detekonai.Core.Tests
 		}
 
 		[Test]
+		public void AddString_ReadString_Consistent_if_string_is_null()
+		{
+			blob.AddString(null);
+			Assert.That(blob.Index, Is.EqualTo(4), "Index check");
+			blob.JumpIndexToBegin();
+			Assert.That(blob.ReadString(), Is.Null, "Readback check");
+		}
+
+		[Test]
 		public void AddFixedString_ReadFixedString_Consistent()
 		{
 			blob.AddFixedString("The quick brown fox jumps over the lazy dog");

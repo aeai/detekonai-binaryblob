@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace Detekonai.Core
 {
@@ -32,7 +33,7 @@ namespace Detekonai.Core
 		private readonly byte[] memory;
 		private readonly ConcurrentQueue<int> freeIndexes = new ConcurrentQueue<int>();
 		private readonly ConcurrentBag<BinaryBlob> blobs = new ConcurrentBag<BinaryBlob>();
-
+		private ConcurrentQueue<TaskCompletionSource<BinaryBlob>> tcsQueue = new ConcurrentQueue<TaskCompletionSource<BinaryBlob>>();
 		public ILogger Logger { get; set; }
 
 		public byte[] GetMemory()
@@ -44,7 +45,6 @@ namespace Detekonai.Core
 		{
 			memory = new byte[chunckAmount * chunkSize];
 			BlobSize = chunkSize;
-
 			//we use more memory this way but save some complexity and cpu during "Set"
 			for (int i = 0; i < chunckAmount; i++)
 			{
@@ -63,6 +63,36 @@ namespace Detekonai.Core
 				throw new BufferOverflowException("We ran out of space, increase the buffer size!");
 			}
 		}
+
+		//async???????????
+		public bool TryToGetBlob(out BinaryBlob blob)
+		{
+			if (freeIndexes.TryDequeue(out int offset))
+			{
+				blob = GetBlob(offset);
+				return true;
+			}
+			else
+			{
+				blob = null;
+				return false;
+			}
+		}
+
+		public async Task<BinaryBlob> GetBlobAsync()
+		{
+			if(freeIndexes.TryDequeue(out int offset))
+			{
+				return GetBlob(offset);
+			}
+            else 
+			{ 
+				var tcs = new TaskCompletionSource<BinaryBlob>();
+				tcsQueue.Enqueue(tcs);
+				return await tcs.Task;
+			}
+		}
+
 		private BinaryBlob GetBlob(int offset)
 		{
 			BinaryBlob blob;
@@ -83,9 +113,20 @@ namespace Detekonai.Core
 				throw new InvalidOperationException("This blob belongs to a different pool!");
 			}
 			Logger?.Log(this, $"Blob return to the pool, memory chunck {blob.BufferAddress} freed, blobCount: {blobs.Count + 1} freeIndexCount:{freeIndexes.Count + 1}");
+			if(tcsQueue.TryDequeue(out TaskCompletionSource<BinaryBlob> tcs))
+            {
+				blob.Assign();
+				if(tcs.TrySetResult(blob))
+                {
+					return;
+                }
+				blob.CancelAssign();
+			}
+
 			freeIndexes.Enqueue(blob.BufferAddress);
 			blob.Configure(0, 0);
 			blobs.Add(blob);
+
 		}
 	}
 }

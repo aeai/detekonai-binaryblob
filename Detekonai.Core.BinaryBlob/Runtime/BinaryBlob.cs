@@ -61,7 +61,10 @@ namespace Detekonai.Core
 		{
 			InUse = true;
 		}
-
+		internal void CancelAssign()
+		{
+			InUse = false;
+		}
 		internal void Configure(int offset, int size)
 		{
 			bufferOffset = offset;

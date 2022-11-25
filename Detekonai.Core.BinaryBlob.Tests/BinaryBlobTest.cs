@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace Detekonai.Core.Tests
@@ -17,7 +18,7 @@ namespace Detekonai.Core.Tests
 		[SetUp]
 		public void InitTest()
 		{
-			pool = new BinaryBlobPool(10, 64);
+			pool = new BinaryBlobPool(3, 64);
 			blob = pool.GetBlob();
 		}
 
@@ -40,7 +41,43 @@ namespace Detekonai.Core.Tests
 			blob.Release();
 
 			Assert.That(pool.AvailableBlobs, Is.EqualTo(1), "Check if blob is back in the pool");
-			Assert.That(pool.AvailableChunks, Is.EqualTo(10), "Check if memory chunk back in the pool");
+			Assert.That(pool.AvailableChunks, Is.EqualTo(3), "Check if memory chunk back in the pool");
+		}	
+		[Test]
+		public async Task You_can_wait_for_free_blobs()
+		{
+			var blob2 = pool.GetBlob();
+			var blob3 = pool.GetBlob();
+			BinaryBlob blob5 = null;
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+			Task.Run(async () =>
+			{
+				await Task.Delay(1000);
+				blob2.Release();
+			}
+			);
+			Task.Run(async () =>
+			{
+				blob5 = await pool.GetBlobAsync();
+				Assert.That(blob5.InUse, Is.EqualTo(true), "The blob is active");
+				blob5.Release();
+			}
+);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
+			var blob4 = await pool.GetBlobAsync();
+			Assert.That(pool.AvailableBlobs, Is.EqualTo(0), "Check if blob is back in the pool");
+			Assert.That(pool.AvailableChunks, Is.EqualTo(0), "Check if memory chunk back in the pool");
+			Assert.That(blob4.InUse, Is.EqualTo(true), "The blob is active");
+		}
+
+		[Test]
+		public async Task You_can_wait_for_free_blobs_even_if_we_have_blobs_available()
+		{
+			var blob4 = await pool.GetBlobAsync();
+			Assert.That(pool.AvailableBlobs, Is.EqualTo(0), "Check if blob is back in the pool");
+			Assert.That(pool.AvailableChunks, Is.EqualTo(1), "Check if memory chunk back in the pool");
+			Assert.That(blob4.InUse, Is.EqualTo(true), "The blob is active");
 		}
 
 		[Test]
@@ -51,7 +88,7 @@ namespace Detekonai.Core.Tests
 			blob.Release();
 			blob.Release();
 			Assert.That(pool.AvailableBlobs, Is.EqualTo(1), "Check if blob is back in the pool");
-			Assert.That(pool.AvailableChunks, Is.EqualTo(10), "Check if memory chunk back in the pool");
+			Assert.That(pool.AvailableChunks, Is.EqualTo(3), "Check if memory chunk back in the pool");
 		}
 
 		[Test]

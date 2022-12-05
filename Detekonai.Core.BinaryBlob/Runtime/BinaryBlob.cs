@@ -124,12 +124,16 @@ namespace Detekonai.Core
 		{
 			AddInt((int)val);
 		}
-		public unsafe void AddLong(long val)
+		public void AddLong(long val)
 		{
-			fixed (byte* b = &buffer[bufferOffset + Index])
-			{
-				*((long*)b) = val;
-			}
+			buffer[bufferOffset + Index + 0] = (byte)val;
+			buffer[bufferOffset + Index + 1] = (byte)(val >> 8);
+			buffer[bufferOffset + Index + 2] = (byte)(val >> 16);
+			buffer[bufferOffset + Index + 3] = (byte)(val >> 24);
+			buffer[bufferOffset + Index + 4] = (byte)(val >> 32);
+			buffer[bufferOffset + Index + 5] = (byte)(val >> 40);
+			buffer[bufferOffset + Index + 6] = (byte)(val >> 48);
+			buffer[bufferOffset + Index + 7] = (byte)(val >> 56);
 			Index += 8;
 		}
 		public void AddULong(ulong val)

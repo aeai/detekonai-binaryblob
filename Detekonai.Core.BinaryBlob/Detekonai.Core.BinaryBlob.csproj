@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>    <Version>0.0.12</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>    <Version>0.0.13</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright (c) 2021 Erik Takakura-Zajac</Copyright>
     <PackageProjectUrl>https://github.com/aeai/detekonai-binaryblob</PackageProjectUrl>

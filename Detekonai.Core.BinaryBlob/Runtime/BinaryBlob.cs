@@ -97,12 +97,10 @@ namespace Detekonai.Core
 			Index++;
 		}
 
-		public unsafe void AddShort(short val)
+		public void AddShort(short val)
 		{
-			fixed (byte* b = &buffer[bufferOffset + Index])
-			{
-				*((short*)b) = val;
-			}
+			buffer[bufferOffset + Index] = (byte)val;
+			buffer[bufferOffset + Index + 1] = (byte)(val >> 8);
 			Index += 2;
 		}
 
@@ -111,12 +109,12 @@ namespace Detekonai.Core
 			AddShort((short)val);
 		}
 
-		public unsafe void AddInt(int val)
+		public void AddInt(int val)
 		{
-			fixed (byte* b = &buffer[bufferOffset + Index])
-			{
-				*((int*)b) = val;
-			}
+			buffer[bufferOffset + Index + 0] = (byte)val;
+			buffer[bufferOffset + Index + 1] = (byte)(val >> 8);
+			buffer[bufferOffset + Index + 2] = (byte)(val >> 16);
+			buffer[bufferOffset + Index + 3] = (byte)(val >> 24);
 			Index += 4;
 		}
 

@@ -1,6 +1,6 @@
 {
   "name": "com.detekonai.core.binaryblob",
-  "version": "0.0.10",
+  "version": "0.0.14",
   "displayName": "Detekonai Binary Blob",
   "description": "Binary Blob for easy binary serialization",
   "unity": "2019.1",

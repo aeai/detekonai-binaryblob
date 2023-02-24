@@ -40,10 +40,11 @@ namespace Detekonai.Core
 		{
 			return memory;
 		}
-
+		private string name;
 		public BinaryBlobPool(int chunckAmount, int chunkSize)
 		{
 			memory = new byte[chunckAmount * chunkSize];
+			name = $"BP({chunckAmount}x{chunkSize})";
 			BlobSize = chunkSize;
 			//we use more memory this way but save some complexity and cpu during "Set"
 			for (int i = 0; i < chunckAmount; i++)
@@ -60,7 +61,7 @@ namespace Detekonai.Core
 			}
 			else
 			{
-				throw new BufferOverflowException("We ran out of space, increase the buffer size!");
+				throw new BufferOverflowException($"[{name}] We ran out of space, increase the buffer size!");
 			}
 		}
 
@@ -86,10 +87,13 @@ namespace Detekonai.Core
 				return GetBlob(offset);
 			}
             else 
-			{ 
+			{
+				Logger?.Log(this, $"[{ name}] Waiting for a free blob...");
 				var tcs = new TaskCompletionSource<BinaryBlob>();
 				tcsQueue.Enqueue(tcs);
-				return await tcs.Task;
+				var res = await tcs.Task;
+				Logger?.Log(this, $"[{ name}] Got a free blob, await is over, proceeding...");
+				return res;
 			}
 		}
 
@@ -102,7 +106,7 @@ namespace Detekonai.Core
 			}
 			blob.Configure(offset, BlobSize);
 			blob.Assign();
-			Logger?.Log(this, $"{offset} is assigned to a blob");
+			Logger?.Log(this, $"[{ name}] { offset} is assigned to a blob");
 			return blob;
 		}
 
@@ -110,14 +114,15 @@ namespace Detekonai.Core
 		{
 			if (blob.Owner != this)
 			{
-				throw new InvalidOperationException("This blob belongs to a different pool!");
+				throw new InvalidOperationException($"[{ name}] This blob belongs to a different pool!");
 			}
-			Logger?.Log(this, $"Blob return to the pool, memory chunck {blob.BufferAddress} freed, blobCount: {blobs.Count + 1} freeIndexCount:{freeIndexes.Count + 1}");
+			Logger?.Log(this, $"[{ name}] Blob return to the pool, memory chunck {blob.BufferAddress} freed, blobCount: {blobs.Count + 1} freeIndexCount:{freeIndexes.Count + 1}");
 			if(tcsQueue.TryDequeue(out TaskCompletionSource<BinaryBlob> tcs))
             {
 				blob.Assign();
 				if(tcs.TrySetResult(blob))
                 {
+					Logger?.Log(this, $"[{ name}] Blob { blob.BufferAddress} reassigned for someone in the queue");
 					return;
                 }
 				blob.CancelAssign();
